@@ -5,15 +5,19 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea, Box, DialogTitle, TextField, Button, ButtonGroup} from '@mui/material';
+import { CardActionArea, Box, DialogTitle, TextField, Button} from '@mui/material';
 import '../index.css'
+import Navbar from '../components/Navbar';
+
 function Home() {
     const [pokemon, setPokemon] = useState([]);
     const [pokeCount, setPokeCount] = useState(0)
     const [pokeSearch, setPokeSearch] = useState('')
     const [pokeRes, setPokeRes] = useState({
+        key: '',
         name: '',
-        images: ''
+        images: '',
+        data: null
     })
     const [loading, setLoading] = useState(false)
     
@@ -35,10 +39,12 @@ function Home() {
       .then(res => {
           setLoading(true)
           setPokeRes({
+            key: res.data.id,
             name: res.data.name,
-            images: res.data.sprites.front_default
+            images: res.data.sprites.front_default,
+            datas: res.data
           })
-          console.log(pokeRes)
+          console.log('poke res =====>',pokeRes)
           setLoading(false)
       })
     }
@@ -71,12 +77,16 @@ function Home() {
 
   return (
     <div className="Home">
+      <Navbar />
       <DialogTitle sx={{ textAlign: 'center' }}>
         <h1>Poke Center</h1>
       </DialogTitle>
       <Box 
           component="div"
-          sx={{ display:'flex', justifyContent: 'center' }}
+          sx={{ 
+                display:'flex', 
+                justifyContent: 'center' 
+              }}
         >
             <form onSubmit={searchPokemon}>
                   <TextField 
@@ -97,29 +107,29 @@ function Home() {
         <Box
             sx={{ display: 'flex', justifyContent: 'center' }}
             >
-            {loading ? (
+            { loading ? (
                     <p> In Progress </p>
                 ) : (
                 <div className='poke-result'>
-                        <Card 
-                            variant='success'
-                            key={pokeRes.id}
-                            sx={{ maxWidth: 200, m: 5 }}
-                        >
-                        <CardActionArea>
-                        <CardMedia
-                            component="img"
-                            height="200"
-                            image={pokeRes.images}
-                            alt={pokeRes.images}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div" sx={{ textAlign: 'center' }}>
-                            {pokeRes.name}
-                            </Typography>
-                        </CardContent>
-                        </CardActionArea>
-                        </Card>
+                    <div 
+                        className='poke-card'
+                        key={pokeRes.key}    
+                    >
+                         <Link
+                             to={`/${pokeRes.key}`} 
+                             className='poke-card'
+                             state={{
+                               dataParams: pokeRes.datas
+                              }}
+                          >
+                            <div className='poke-img'>
+                              <img src={pokeRes.images} alt={pokeRes.images} />
+                            </div>
+                            <div className='poke-name'>
+                              <h1> {pokeRes.name} </h1>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
                 )}
         </Box>
@@ -128,12 +138,12 @@ function Home() {
                 <Card sx={{ maxWidth: 200, m: 2 }}>
                   <Link 
                     to={`/${p.data.id}`} 
-                    className='poke-card' key={p.data.id}
+                    className='poke-card' 
                     state={{
                       dataParams: p.data
                      }}
                     >
-                        <CardActionArea>
+                        <CardActionArea key={p.data.id}>
                             <CardMedia
                                 component="img"
                                 height="200"

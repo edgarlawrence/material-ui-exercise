@@ -20,9 +20,15 @@ code {
 }
 
 .poke-result {
-  display: block;
+  display: flex;
+  justify-content: center;
 }
 
 .nones {
   display: none;
+}
+
+.poke-card {
+  text-decoration: none;
+  color: black;
 }
